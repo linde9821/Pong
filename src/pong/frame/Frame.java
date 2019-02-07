@@ -16,6 +16,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import pong.ai.Ai;
 import pong.ball.Ball;
 import pong.controller.Controller;
 
@@ -44,14 +45,10 @@ public class Frame extends Application {
 	private boolean sispressed = false;
 	private boolean randGetroffen = false;
 	private boolean controllerGetroffen = false;
-	private boolean coutofScreen1up = false; // controller 1 nach oben aus dem
-												// Bild
-	private boolean coutofScreen2up = false; // controller 2 nach oben aus dem
-												// Bild
-	private boolean coutofScreen1down = false; // controller 1 nach untem aus
-												// dem Bild
-	private boolean coutofScreen2down = false; // controller 2 nach untem aus
-												// dem Bild
+	private boolean coutofScreen1up = false; // controller 1 nach oben aus dem Bild
+	private boolean coutofScreen2up = false; // controller 2 nach oben aus dem Bild
+	private boolean coutofScreen1down = false; // controller 1 nach untem aus dem Bild
+	private boolean coutofScreen2down = false; // controller 2 nach untem aus dem Bild
 	private boolean firststart = true;
 	private long start = 0;
 	private long iteration = 0;
@@ -59,11 +56,7 @@ public class Frame extends Application {
 	private Color forshapes = Color.WHITE;
 
 	// ai
-	// private Ai ComputerAi = new Ai();
-
-	int it = 0;
-	private long startTime;
-
+	//private Ai ComputerAi = new Ai();
 
 	public void start(Stage primaryStage) {
 		Pane root = new Pane();
@@ -132,7 +125,6 @@ public class Frame extends Application {
 		controller2.setX(Math.round((primaryStage.getWidth()) * 0.95));
 		controller1.setX(primaryStage.getWidth() * 0.05);
 
-
 		Task<Void> sleeper = new Task<Void>() {
 			@Override
 			protected Void call() throws Exception {
@@ -153,15 +145,10 @@ public class Frame extends Application {
 		AnimationTimer animator = new AnimationTimer() {
 			@Override
 			public void handle(long arg0) {
-
-				iteration = System.currentTimeMillis();
-				System.out.println(iteration - start);
-
 				seconds = Math.round((iteration - start) / 1000);
 				ball1.setVel(ball1.getVel() * 1.004);
 
-				it++;
-				System.out.println("Durchlaeufe: " + (double)(it / (System.currentTimeMillis() - startTime)));
+
 				if (seconds == 15) {
 					if (ball1.getRadius() > 5) {
 						controller1.setDeltaY(controller1.getnewDeltaY());
@@ -171,10 +158,10 @@ public class Frame extends Application {
 						circle1.setFill(colorChange());
 						start = System.currentTimeMillis();
 					}
-
 				}
 				if (score1.getText().equals("" + 5) || score2.getText().equals("" + 5)) {
-					new Thread(sleeper).run();
+					//new Thread(sleeper).run();
+					System.exit(0);
 				}
 				if (firststart) {
 					show(); // deckt objekte auf
@@ -197,6 +184,13 @@ public class Frame extends Application {
 				if (sispressed && !coutofScreen1down) {
 					controller1.move(-1);
 				}
+
+				if (coutofScreen2up || coutofScreen2down)
+					controller2.bounce();
+
+				if (coutofScreen1down || coutofScreen1up)
+					controller1.bounce();
+
 				randGetroffen = rgetroffen(primaryStage); // randgetroffen?
 				if (randGetroffen) {
 					directionChange(ball1.getDirectionX(), ball1.getDirectionY());
@@ -205,7 +199,7 @@ public class Frame extends Application {
 				if (controllerGetroffen) {
 					directionChange(ball1.getDirectionX());
 				}
-				// ComputerAi.makeDecision(ball1, controller2);
+				//ComputerAi.makeDecision(ball1, controller2);
 				updateScore(primaryStage);
 
 				draw();
@@ -232,23 +226,22 @@ public class Frame extends Application {
 		circle1.setCenterX(ball1.getCX());
 		circle1.setCenterY(ball1.getCY());
 		circle1.setRadius(ball1.getRadius()); // ball 1
-
 	}
 
 	public void checkinScreencontroller(Stage primaryStage) {
-		if (controller1.getY() <= 0) {
+		if (controller1.getY() <= 10) {
 			coutofScreen1up = true;
 		} else
 			coutofScreen1up = false;
-		if (controller1.getY() >= primaryStage.getHeight() - 100) {
+		if (controller1.getY() >= primaryStage.getHeight() - 90) {
 			coutofScreen1down = true;
 		} else
 			coutofScreen1down = false;
-		if (controller2.getY() <= 0) {
+		if (controller2.getY() <= 10) {
 			coutofScreen2up = true;
 		} else
 			coutofScreen2up = false;
-		if (controller2.getY() >= primaryStage.getHeight() - 100) {
+		if (controller2.getY() >= primaryStage.getHeight() - 90) {
 			coutofScreen2down = true;
 		} else
 			coutofScreen2down = false;

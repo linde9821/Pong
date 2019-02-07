@@ -3,8 +3,8 @@ package pong.controller;
 public class Controller {
 	private double x;
 	private double y;
-	private final double W = 25; // width
-	private final double H = 100; // heigth
+	private final double w = 25; // width
+	private final double h = 100; // heigth
 	private int deltay = 10;
 
 	private double vel = 0;
@@ -38,11 +38,11 @@ public class Controller {
 	}
 
 	public double getW() {
-		return W;
+		return w;
 	}
 
 	public double getH() {
-		return H;
+		return h;
 	}
 
 	public void move(int direction) {
@@ -67,9 +67,13 @@ public class Controller {
 		}
 	}
 
+	public void bounce(){
+		vel = -vel;
+	}
+
 	public void updateVel() {
 		this.y += vel;
-		vel *= 0.95; // Reibung
+		vel *= 0.98; // Reibung
 	}
 
 }

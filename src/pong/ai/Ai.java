@@ -9,6 +9,7 @@ public class Ai {
 	private final int hardD = 2;
 
 	private double yBPos = 0;
+	private double xBPos = 0;
 	private double yCPosMin, yCPosMax = 0;
 	private int yVel = 0;
 
@@ -18,19 +19,22 @@ public class Ai {
 
 	public void makeDecision(final Ball aiBall, final Controller aiController) {
 		yBPos = aiBall.getCY();
+		xBPos = aiBall.getCX();
 		yCPosMin = aiController.getY() - aiController.getH() / 2;
 		yCPosMax = aiController.getY() + aiController.getH() / 2;
 
-		switch (difficulty) {
-		case (easyD):
-			yVel = easy();
-			break;
-		case (normalD):
-			yVel = normal();
-			break;
-		case (hardD):
-			yVel = hard();
-			break;
+		if (Math.abs(aiController.getX() - xBPos) <= 800) {
+			switch (difficulty) {
+			case (easyD):
+				yVel = easy();
+				break;
+			case (normalD):
+				yVel = normal();
+				break;
+			case (hardD):
+				yVel = hard(aiController);
+				break;
+			}
 		}
 
 		if (System.currentTimeMillis() - lastDic > 16.6667) {
@@ -47,13 +51,20 @@ public class Ai {
 		return 0;
 	}
 
-	private int hard() {
-		if (yBPos < yCPosMin && yBPos < yCPosMax) {
+	private int hard(final Controller aiController) {
+		if (yBPos < yCPosMin) {
 			yVel = 1;
-		} else if (yBPos > yCPosMin && yBPos > yCPosMax) {
+		} else if (yBPos < yCPosMax) { // urgent
+			yVel = 1;
+			aiController.move(1);
+		} else if (yBPos > yCPosMin) {
 			yVel = -1;
-		} else
+		} else if (yBPos > yCPosMax) { // urgent
+			yVel = -1;
+			aiController.move(-1);
+		} else {
 			yVel = 0;
+		}
 
 		return yVel;
 	}
