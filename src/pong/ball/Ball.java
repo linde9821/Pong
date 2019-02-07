@@ -7,6 +7,9 @@ public class Ball {
 	private int directionX;
 	private int directionY;
 	private double velocity;
+	
+	private final double velConst = 1.004; 
+	private final double velMax = 30;
 
 	public Ball(double x, double y) {
 		this.cX = x;
@@ -98,11 +101,16 @@ public class Ball {
 	public void decreaseRadius() {
 		radius = radius - 2.5;
 	}
+	
+	public void increaseSpeed() {
+		if (velocity <= velMax)
+			velocity = velocity * velConst;
+	}
 
 	public void reset() {
 		cX = 640;
 		cY = 360;
-		velocity = 5;
-		directionX *= -1;
+		velocity = 6;
+		directionX *= -1;	//richtungswechsel (auf Gewinner wird geschossen) 
 	}
 }

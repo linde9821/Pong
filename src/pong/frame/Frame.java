@@ -16,7 +16,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import pong.ai.Ai;
 import pong.ball.Ball;
 import pong.controller.Controller;
 
@@ -24,46 +23,47 @@ import pong.controller.Controller;
  *
  * Beschreibung
  *
- * @version 1.4 vom 21.11.2018
+ * @version 0.1git vom 07.02.2019
  * @author Maximilian Bieleke
+ * @author Moritz Lindner
  */
 
 public class Frame extends Application {
-	private Circle circle1 = new Circle();
+	private Circle circle = new Circle();
 	private Rectangle rectangle1 = new Rectangle();
 	private Rectangle rectangle2 = new Rectangle();
 	private Controller controller1 = new Controller(50, 360);
 	private Controller controller2 = new Controller(1205, 360);
 	private Text score1 = new Text();
-	private int score1temp = 0;
-	private int score2temp = 0;
 	private Text score2 = new Text();
-	private Ball ball1 = new Ball(640, 360);
-	private boolean upispressed = false;
-	private boolean downispressed = false;
-	private boolean wispressed = false;
-	private boolean sispressed = false;
+	private int score1Temp = 0;
+	private int score2Temp = 0;
+	private Ball ball = new Ball(640, 360);
+	private boolean upIsPressed = false;
+	private boolean downIsPressed = false;
+	private boolean wIsPressed = false;
+	private boolean sIsPressed = false;
 	private boolean randGetroffen = false;
 	private boolean controllerGetroffen = false;
-	private boolean coutofScreen1up = false; // controller 1 nach oben aus dem Bild
-	private boolean coutofScreen2up = false; // controller 2 nach oben aus dem Bild
-	private boolean coutofScreen1down = false; // controller 1 nach untem aus dem Bild
-	private boolean coutofScreen2down = false; // controller 2 nach untem aus dem Bild
-	private boolean firststart = true;
+	private boolean coutofScreen1Up = false; // controller 1 nach oben aus dem Bild
+	private boolean cCutOfScreen2Up = false; // controller 2 nach oben aus dem Bild
+	private boolean coutOfScreen1Down = false; // controller 1 nach untem aus dem Bild
+	private boolean coutOfScreen2Down = false; // controller 2 nach untem aus dem Bild
+	private boolean firstStart = true;
 	private long start = 0;
 	private long iteration = 0;
 	private long seconds = 0;
-	private Color forshapes = Color.WHITE;
+	private Color forShapes = Color.WHITE;
 
 	// ai
-	//private Ai ComputerAi = new Ai();
+	// private Ai ComputerAi = new Ai();
 
 	public void start(Stage primaryStage) {
 		Pane root = new Pane();
 		Scene scene = new Scene(root, 520, 304, Color.BLACK);
 
 		primaryStage.setFullScreen(true);
-		root.getChildren().add(circle1);
+		root.getChildren().add(circle);
 		root.getChildren().add(rectangle1);
 		root.getChildren().add(rectangle2);
 		root.getChildren().add(score1);
@@ -74,16 +74,16 @@ public class Frame extends Application {
 			public void handle(KeyEvent event) {
 				switch (event.getCode()) {
 				case UP:
-					upispressed = true;
+					upIsPressed = true;
 					break; // controller2.move(1);
 				case DOWN:
-					downispressed = true;
+					downIsPressed = true;
 					break; // controller2.move(-1);
 				case W:
-					wispressed = true;
+					wIsPressed = true;
 					break; // controller1.move(1);
 				case S:
-					sispressed = true;
+					sIsPressed = true;
 					break; // controller1.move(-1);
 				case ESCAPE:
 					System.exit(0);
@@ -97,23 +97,23 @@ public class Frame extends Application {
 			public void handle(KeyEvent evt) {
 				switch (evt.getCode()) {
 				case UP:
-					upispressed = false;
+					upIsPressed = false;
 					break;
 				case DOWN:
-					downispressed = false;
+					downIsPressed = false;
 					break;
 				case W:
-					wispressed = false;
+					wIsPressed = false;
 					break;
 				case S:
-					sispressed = false;
+					sIsPressed = false;
 					break;
 				default:
 					break;
 				}
 			}
 		});
-		preparescore();
+		prepareScore();
 		setColors();
 		start = System.currentTimeMillis();
 		primaryStage.setOnCloseRequest(e -> System.exit(0));
@@ -146,60 +146,58 @@ public class Frame extends Application {
 			@Override
 			public void handle(long arg0) {
 				seconds = Math.round((iteration - start) / 1000);
-				ball1.setVel(ball1.getVel() * 1.004);
-
+				ball.increaseSpeed();
 
 				if (seconds == 15) {
-					if (ball1.getRadius() > 5) {
+					if (ball.getRadius() > 5) {
 						controller1.setDeltaY(controller1.getnewDeltaY());
 						controller2.setDeltaY(controller2.getnewDeltaY());
-						ball1.decreaseRadius();
-						circle1.setRadius(ball1.getRadius());
-						circle1.setFill(colorChange());
+						ball.decreaseRadius();
+						circle.setRadius(ball.getRadius());
+						circle.setFill(colorChange());
 						start = System.currentTimeMillis();
 					}
 				}
 				if (score1.getText().equals("" + 5) || score2.getText().equals("" + 5)) {
-					//new Thread(sleeper).run();
+					// new Thread(sleeper).run();
 					System.exit(0);
 				}
-				if (firststart) {
+				if (firstStart) {
 					show(); // deckt objekte auf
-					//
-					firststart = false;
+					//w
+					firstStart = false;
 				}
 
-				checkinScreencontroller(primaryStage); // guckt ob alle
+				checkInScreenController(primaryStage); // guckt ob alle
 														// controller im Bild
 														// sind
-				if (upispressed && !coutofScreen2up) {
+				if (upIsPressed && !cCutOfScreen2Up) 
 					controller2.move(1);
-				}
-				if (downispressed && !coutofScreen2down) {
+				if (downIsPressed && !coutOfScreen2Down) 
 					controller2.move(-1);
-				}
-				if (wispressed && !coutofScreen1up) {
+				if (wIsPressed && !coutofScreen1Up) 
 					controller1.move(1);
-				}
-				if (sispressed && !coutofScreen1down) {
+				if (sIsPressed && !coutOfScreen1Down) 
 					controller1.move(-1);
-				}
-
-				if (coutofScreen2up || coutofScreen2down)
+				
+				// Kontroller Bounce
+				if (cCutOfScreen2Up || coutOfScreen2Down)
 					controller2.bounce();
 
-				if (coutofScreen1down || coutofScreen1up)
+				if (coutOfScreen1Down || coutofScreen1Up)
 					controller1.bounce();
 
-				randGetroffen = rgetroffen(primaryStage); // randgetroffen?
-				if (randGetroffen) {
-					directionChange(ball1.getDirectionX(), ball1.getDirectionY());
-				}
-				controllerGetroffen = cgetroffen();
-				if (controllerGetroffen) {
-					directionChange(ball1.getDirectionX());
-				}
-				//ComputerAi.makeDecision(ball1, controller2);
+				randGetroffen = rGetroffen(primaryStage); // randgetroffen?
+				
+				if (randGetroffen) 
+					directionChange(ball.getDirectionX(), ball.getDirectionY());
+				
+				controllerGetroffen = cGetroffen();
+				
+				if (controllerGetroffen) 
+					directionChange(ball.getDirectionX());
+				
+				// ComputerAi.makeDecision(ball, controller2);
 				updateScore(primaryStage);
 
 				draw();
@@ -212,6 +210,77 @@ public class Frame extends Application {
 		launch(args);
 	} // end of main
 
+	public void checkInScreenController(Stage primaryStage) {
+		if (controller1.getY() <= 10)
+			coutofScreen1Up = true;
+		else
+			coutofScreen1Up = false;
+
+		if (controller1.getY() >= primaryStage.getHeight() - 90)
+			coutOfScreen1Down = true;
+		else
+			coutOfScreen1Down = false;
+
+		if (controller2.getY() <= 10)
+			cCutOfScreen2Up = true;
+		else
+			cCutOfScreen2Up = false;
+
+		if (controller2.getY() >= primaryStage.getHeight() - 90)
+			coutOfScreen2Down = true;
+		else
+			coutOfScreen2Down = false;
+	}
+
+	public void directionChange(int directionx, int directiony) {
+		// ball.setDirectionx(directionx);
+		ball.setDirectionY(directiony);
+	}
+
+	public void directionChange(int directionx) {
+		ball.setDirectionX(directionx);
+	}
+
+	public boolean cGetroffen() { // hat der Ball den Controller getroffen?
+		if ((ball.getCX() - ball.getRadius()) <= (controller1.getX() + controller1.getW())
+				&& (ball.getCX() - ball.getRadius()) >= controller1.getX() && ball.getCY() >= controller1.getY()
+				&& ball.getCY() <= (controller1.getY() + controller1.getH())) {
+			return true; // linker controller
+		}
+		if ((ball.getCX() + ball.getRadius()) >= controller2.getX()
+				&& (ball.getCX() + ball.getRadius()) <= controller2.getX() + controller2.getW()
+				&& ball.getCY() >= controller2.getY() && ball.getCY() <= (controller2.getY() + controller2.getH())) {
+			return true;
+		} else
+			return false;
+	}
+
+	public boolean rGetroffen(Stage primaryStage) {
+		double y = ball.getCY() + ball.getRadius(); // radius mit beachten
+
+		if (y <= 0) {
+			return true;
+		}
+		if (y >= primaryStage.getHeight()) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean goalOne(Stage primaryStage) { // spieler eins schießt ein Tor
+		if (ball.getCX() > primaryStage.getWidth()) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean goalTwo(Stage primaryStage) {
+		if (ball.getCX() < 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public void show() {
 		rectangle1.setX(controller1.getX());
 		rectangle1.setY(controller1.getY() - 50);
@@ -223,108 +292,39 @@ public class Frame extends Application {
 		rectangle2.setHeight(controller2.getH());
 		rectangle2.setWidth(controller2.getW()); // controller 2
 
-		circle1.setCenterX(ball1.getCX());
-		circle1.setCenterY(ball1.getCY());
-		circle1.setRadius(ball1.getRadius()); // ball 1
-	}
-
-	public void checkinScreencontroller(Stage primaryStage) {
-		if (controller1.getY() <= 10) {
-			coutofScreen1up = true;
-		} else
-			coutofScreen1up = false;
-		if (controller1.getY() >= primaryStage.getHeight() - 90) {
-			coutofScreen1down = true;
-		} else
-			coutofScreen1down = false;
-		if (controller2.getY() <= 10) {
-			coutofScreen2up = true;
-		} else
-			coutofScreen2up = false;
-		if (controller2.getY() >= primaryStage.getHeight() - 90) {
-			coutofScreen2down = true;
-		} else
-			coutofScreen2down = false;
-	}
-
-	public boolean rgetroffen(Stage primaryStage) {
-		double y = ball1.getCY() + ball1.getRadius(); // radius mit beachten
-
-		if (y <= 0) {
-			return true;
-		}
-		if (y >= primaryStage.getHeight()) {
-			return true;
-		}
-		return false;
-	}
-
-	public void directionChange(int directionx, int directiony) {
-		// ball1.setDirectionx(directionx);
-		ball1.setDirectionY(directiony);
-	}
-
-	public void directionChange(int directionx) {
-		ball1.setDirectionX(directionx);
-	}
-
-	public boolean cgetroffen() { // hat der Ball den Controller getroffen?
-		if ((ball1.getCX() - ball1.getRadius()) <= (controller1.getX() + controller1.getW())
-				&& (ball1.getCX() - ball1.getRadius()) >= controller1.getX() && ball1.getCY() >= controller1.getY()
-				&& ball1.getCY() <= (controller1.getY() + controller1.getH())) {
-			return true; // linker controller
-		}
-		if ((ball1.getCX() + ball1.getRadius()) >= controller2.getX()
-				&& (ball1.getCX() + ball1.getRadius()) <= controller2.getX() + controller2.getW()
-				&& ball1.getCY() >= controller2.getY() && ball1.getCY() <= (controller2.getY() + controller2.getH())) {
-			return true;
-		} else
-			return false;
-	}
-
-	public void updateScore(Stage prim) {
-		if (goalOne(prim)) {
-			score1temp++;
-			score1.setText("" + score1temp);
-			firststart = true;
-			ball1.reset();
-		}
-		if (goalTwo(prim)) {
-			score2temp++;
-			score2.setText("" + score2temp);
-			firststart = true;
-			ball1.reset();
-		}
-	}
-
-	public boolean goalOne(Stage primaryStage) { // spieler eins schießt ein Tor
-		if (ball1.getCX() > primaryStage.getWidth()) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean goalTwo(Stage primaryStage) {
-		if (ball1.getCX() < 0) {
-			return true;
-		}
-		return false;
+		circle.setCenterX(ball.getCX());
+		circle.setCenterY(ball.getCY());
+		circle.setRadius(ball.getRadius()); // ball
 	}
 
 	public void draw() {
 		controller1.updateVel();
 		controller2.updateVel();
-
 		rectangle1.setY(controller1.getY());
 		rectangle2.setY(controller2.getY()); // bewegen der Controller
-		circle1.setCenterX(ball1.moveCX(ball1.getDirectionX()));
-		circle1.setCenterY(ball1.moveCY(ball1.getDirectionY())); // bewegen des
-																	// Balles
+		circle.setCenterX(ball.moveCX(ball.getDirectionX()));
+		circle.setCenterY(ball.moveCY(ball.getDirectionY())); // bewegen des Balles
 	}
 
-	public void preparescore() {
-		score1.setText("" + score1temp);
-		score2.setText("" + score2temp);
+	public void updateScore(Stage prim) {
+		if (goalOne(prim)) {
+			score1Temp++;
+			score1.setText("" + score1Temp);
+			firstStart = true;
+			ball.reset();
+		}
+		
+		if (goalTwo(prim)) {
+			score2Temp++;
+			score2.setText("" + score2Temp);
+			firstStart = true;
+			ball.reset();
+		}
+	}
+
+	public void prepareScore() {
+		score1.setText("" + score1Temp);
+		score2.setText("" + score2Temp);
 		score1.setLayoutY(125);
 		score2.setLayoutY(125);
 		score1.setFont(new Font(50));
@@ -332,11 +332,11 @@ public class Frame extends Application {
 	}
 
 	public void setColors() {
-		rectangle1.setFill(forshapes);
-		circle1.setFill(forshapes);
-		rectangle2.setFill(forshapes);
-		score1.setFill(forshapes);
-		score2.setFill(forshapes);
+		rectangle1.setFill(forShapes);
+		circle.setFill(forShapes);
+		rectangle2.setFill(forShapes);
+		score1.setFill(forShapes);
+		score2.setFill(forShapes);
 	}
 
 	public Color colorChange() {
