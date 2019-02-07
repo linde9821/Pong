@@ -1,4 +1,9 @@
-public class ai {
+package pong.ai;
+
+import pong.ball.Ball;
+import pong.controller.Controller;
+
+public class Ai {
 	private final int easyD = 0;
 	private final int normalD = 1;
 	private final int hardD = 2;
@@ -13,8 +18,8 @@ public class ai {
 
 	public void makeDecision(final Ball aiBall, final Controller aiController) {
 		yBPos = aiBall.getCY();
-		yCPosMin = aiController.getY() - 25;
-		yCPosMax = aiController.getY() + 25;
+		yCPosMin = aiController.getY() - aiController.getH() / 2;
+		yCPosMax = aiController.getY() + aiController.getH() / 2;
 
 		switch (difficulty) {
 		case (easyD):
@@ -43,9 +48,6 @@ public class ai {
 	}
 
 	private int hard() {
-		System.out.println("yCPosMin:" + yCPosMin);
-		System.out.println("yCPosMax:" + yCPosMax);
-
 		if (yBPos < yCPosMin && yBPos < yCPosMax) {
 			yVel = 1;
 		} else if (yBPos > yCPosMin && yBPos > yCPosMax) {
